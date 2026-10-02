@@ -1,0 +1,38 @@
+
+SEPTEMBER MONTHLY SALES REPORT FOR LAPTOPS AND  ACCESSORIES SOLD 
+
+1. Introduction
+
+This report presents the sales activities and performance recorded during the month of September. The report covers the number of laptops and accessories handled during the month, as well as the challenges encountered in tracking accessory usage.
+
+2. Sales Performance
+
+During the month of September, a total of 27 laptops were sold, while 47 accessories were recorded.
+The laptop sales were properly recorded. However, there was a challenge with accurately tracking the accessories because we were unable to clearly identify which accessories were:
+	•	Sold separately to customers.
+	•	Given to customers as gifts or complimentary items.
+	•	Used together with laptop sales.
+	•	Still available in stock.
+
+3. Observations
+	1.	A total of 27 laptops were sold during the month.
+	2.	47 accessories were recorded, but their individual usage could not be accurately determined.
+	3.	There was no clear distinction between accessories sold, gifted to customers, and accessories used as part of laptop sales.
+	4.	The lack of proper tracking made it difficult to determine the actual revenue generated from accessories.
+	5.	The situation can also make stock reconciliation difficult and may lead to discrepancies between physical stock and recorded stock.
+
+4. Suggestions and Recommendations
+	1.	Create a separate accessory sales record: Every accessory sold should be recorded separately with the date, quantity, type of accessory, and amount paid.
+	2.	Record complimentary/gift items: Accessories given to customers for free should be recorded as “gift” or “complimentary” rather than being included with normal sales.
+	3.	Record laptop bundles: When an accessory is given or sold together with a laptop, it should be clearly recorded against that particular laptop sale.
+	4.	Conduct regular stock checks: Physical accessories should be counted regularly and compared with the records.
+	5.	Use a simple tracking sheet: A daily spreadsheet or sales book can have separate columns for Accessories Sold, Accessories Gifted, Accessories Used for Laptop Sales, and Balance in Stock.
+	6.	Assign responsibility for recording: One person should be responsible for ensuring that every accessory leaving the store is properly documented.
+	7.	Review records daily: Daily reconciliation will make it easier to identify mistakes before they accumulate at the end of the month.
+
+5. Conclusion
+
+The month of September recorded 27 laptops sold and 47 accessories recorded. While laptop sales were successfully tracked, the major challenge was the inability to accurately distinguish between accessories that were sold, gifted to customers, and used in laptop sales.
+
+Going forward, a more detailed accessory tracking system should be introduced. Proper documentation and regular stock reconciliation will improve accountability, make sales reporting more accurate, reduce discrepancies, and provide a clearer picture of the business’s actual sales performance
+	◦	
