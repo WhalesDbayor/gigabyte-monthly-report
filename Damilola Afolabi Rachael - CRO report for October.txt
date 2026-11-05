@@ -1,0 +1,32 @@
+"WALK-IN & CRM FOLLOW-UP REPORT FOR OCTOBER
+Reporting Period: Saturday, 7 November 2026
+Prepared by: Damilola Afolabi Rachael
+Department: Customer Relations
+
+
+* Total walk-in recorded = 129
+* Successful follow-ups = 363
+* Pending follow-ups = None
+* Won opportunity = 77
+* Lost opportunity = 5
+* Unqualified leads= 22
+
+Reasons for lost opportunities 
+* Customer unavailable to drop and pick up the laptop (Traveling)
+* System was not able to be fixed. (Scrap)
+* Customer not able to afford the price (budget)
+* Unavailability of what is needed to fix the system
+
+Reasons for Unqualified Leads
+* The person who is enquiring, is not the one who will approve or make the payment.
+* The customer came only to ask for the price.
+* The customer does not have the funds at the time of enquiry 
+* Customer came only to compare price.
+
+Issues/ Limitations encountered sor far
+* Repair department went ahead to fix a system without talking to the CRO of the outcome of the diagnosis.
+* Issues with the Credit direct, either their networks or mobile networks issues.
+* Driving issues: there's always an issues of installation, after the claim of proper installation, then we'll find out there are some undone update.
+
+Suggestions:
+* If a customer is to pick a system from repair, the CRO should be informed (in the case of Wazcom)

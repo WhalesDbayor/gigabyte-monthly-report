@@ -9,6 +9,7 @@
   // DOM Elements
   const navTabsContainer = document.getElementById('nav-tabs-container');
   const heroShortcutsContainer = document.getElementById('hero-shortcuts');
+  const heroTakeawaysContainer = document.getElementById('hero-takeaways-container');
   const mainContentArea = document.getElementById('main-content-area');
   const printReportBtn = document.getElementById('print-report-btn');
   const scrollProgress = document.getElementById('scroll-progress');
@@ -72,6 +73,22 @@
     }
   });
 
+  // Render Dynamic Strategic Takeaways in Hero Banner
+  function renderStrategicTakeaways() {
+    if (!heroTakeawaysContainer) return;
+    const takeaways = data.executiveOverview.strategicTakeaways;
+    heroTakeawaysContainer.innerHTML = takeaways.map(item => `
+      <div class="takeaway-item">
+        <i data-lucide="${item.icon}"></i>
+        <div>
+          <div style="font-size:0.75rem; font-family:var(--font-mono); color:var(--accent-cyan); text-transform:uppercase; margin-bottom:0.25rem;">${item.department}</div>
+          <strong style="color:#fff; font-size:0.92rem; display:block; margin-bottom:0.25rem;">${item.title}</strong>
+          <span>${item.text}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
   // Render Navigation Tabs
   function renderNavigation() {
     let html = `
@@ -83,10 +100,11 @@
 
     data.staff.forEach(person => {
       const isAct = activeTab === person.id ? 'active' : '';
+      const firstName = person.name.split(' ')[0];
       html += `
         <button class="nav-btn ${isAct}" data-target="${person.id}">
           <img src="${person.avatar}" class="nav-avatar-mini" alt="${person.name}">
-          <span>${person.name.split(' ')[0]}</span>
+          <span>${firstName} (${person.id === 'cro' ? 'CRO' : person.department.split(' ')[0]})</span>
         </button>
       `;
     });
@@ -140,7 +158,6 @@
     const targetSection = document.getElementById(`view-${tabId}`);
     if (targetSection) {
       targetSection.classList.add('active-view');
-      // Scroll to content view smoothly if user is deep down
       const topOffset = targetSection.getBoundingClientRect().top + window.scrollY - 90;
       window.scrollTo({ top: topOffset, behavior: 'smooth' });
     }
@@ -150,13 +167,13 @@
       window.lucide.createIcons();
     }
 
-    // Trigger charts rendering for this specific tab if needed
+    // Trigger charts rendering for this specific tab
     if (tabId === 'islamiyyah') {
       initIslamiyyahCharts();
     } else if (tabId === 'samson') {
-      initSamsonCharts('september');
-    } else if (tabId === 'oyinlade') {
-      initOyinladeCharts();
+      initSamsonCharts('october');
+    } else if (tabId === 'cro') {
+      initCroCharts();
     } else if (tabId === 'overview') {
       initOverviewCharts();
     }
@@ -188,12 +205,12 @@
           <div class="content-block">
             <div class="block-title">
               <i data-lucide="bar-chart-2"></i>
-              <span>Hardware & Accessory Velocity (Aug vs Sep)</span>
+              <span>Hardware, Repairs & Sales Evolution (Aug — Oct 2026)</span>
             </div>
             <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
-              Direct comparative view of laptop sales, accessory throughput, and service repair intake.
+              Complete three-month velocity tracking laptop sales, inventory throughput, and service repair intake.
             </p>
-            <div class="chart-box">
+            <div class="chart-box" style="height: 320px;">
               <canvas id="overview-chart-sales"></canvas>
             </div>
           </div>
@@ -201,12 +218,12 @@
           <div class="content-block">
             <div class="block-title">
               <i data-lucide="pie-chart"></i>
-              <span>Customer Pipeline & Conversion Distribution (September)</span>
+              <span>October CRM Conversion Funnel (Damilola Afolabi Rachael)</span>
             </div>
             <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
-              Breakdown of 108 recorded customer leads across successful follow-ups, lost, and pending.
+              Breakdown of 129 recorded walk-in prospects yielding 77 closed-won conversions with 0 pending.
             </p>
-            <div class="chart-box">
+            <div class="chart-box" style="height: 320px;">
               <canvas id="overview-chart-crm"></canvas>
             </div>
           </div>
@@ -216,7 +233,7 @@
         <div class="content-block full-width" style="margin-top: 2rem;">
           <div class="block-title">
             <i data-lucide="compass"></i>
-            <span>Integrated Strategic Action Matrix</span>
+            <span>Executive Strategic Action Matrix (October & Q4 Directives)</span>
           </div>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem;">
             ${data.actionableRoadmap.map(item => `
@@ -258,12 +275,13 @@
           <div class="profile-meta-actions">
             <div class="status-indicator">
               <span class="dot"></span>
-              <span>Dual-Month Comparative Report</span>
+              <span>Tri-Month Comparative Audit (Aug - Oct)</span>
             </div>
             <!-- Month Selector -->
             <div class="month-selector" id="islamiyyah-month-selector">
+              <button class="month-tab-btn active" data-month="october">October 2026</button>
+              <button class="month-tab-btn" data-month="september">September 2026</button>
               <button class="month-tab-btn" data-month="august">August 2026</button>
-              <button class="month-tab-btn active" data-month="september">September 2026</button>
               <button class="month-tab-btn" data-month="comparison">Comparison Analytics</button>
             </div>
           </div>
@@ -272,8 +290,8 @@
         <!-- Comparative Metrics Hero Cards -->
         <div class="comparison-hero-card">
           <div class="comparison-header">
-            <h3><i data-lucide="trending-up"></i> August vs September Performance Signals</h3>
-            <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--accent-cyan);">Q3 Reconciled</span>
+            <h3><i data-lucide="trending-up"></i> October Milestone & Multi-Month Performance Signals</h3>
+            <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--accent-cyan);">Verified Oct Audit</span>
           </div>
           <div class="comp-cards-grid">
             ${p.comparisonInsights.map(c => `
@@ -294,57 +312,30 @@
           <div class="content-block">
             <div class="block-title">
               <i data-lucide="bar-chart"></i>
-              <span>Monthly Volume Comparison: Laptop Sales & Accessories</span>
+              <span>Monthly Volume Trends: Laptop Sales, Accessories & Repairs</span>
             </div>
-            <div class="chart-box">
+            <div class="chart-box" style="height: 320px;">
               <canvas id="islamiyyah-volume-chart"></canvas>
             </div>
           </div>
 
           <div class="content-block">
             <div class="block-title">
-              <i data-lucide="layers"></i>
-              <span>Accessory Distribution Challenge Matrix</span>
+              <i data-lucide="wrench"></i>
+              <span>October Laptop Repair Breakdown (81 Units Handled)</span>
             </div>
             <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
-              The 47 recorded accessories in September require systematic breakdown to prevent margin erosion:
+              Clear visibility on the 81 serviced units: 47 completed and collected, 22 pending diagnosis/status, and 12 exits.
             </p>
-            <div style="display:flex; flex-direction:column; gap:0.75rem;">
-              <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(8,12,20,0.6); padding:0.85rem 1.1rem; border-radius:var(--radius-md); border-left:3px solid var(--accent-cyan);">
-                <div>
-                  <h5 style="color:#fff; font-size:0.88rem;">1. Sold Separately</h5>
-                  <p style="font-size:0.76rem; color:var(--text-muted);">Direct cash/transfer retail purchases</p>
-                </div>
-                <span class="priority-tag high">Separate Ledger</span>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(8,12,20,0.6); padding:0.85rem 1.1rem; border-radius:var(--radius-md); border-left:3px solid var(--accent-purple);">
-                <div>
-                  <h5 style="color:#fff; font-size:0.88rem;">2. Complimentary Gifts</h5>
-                  <p style="font-size:0.76rem; color:var(--text-muted);">Promotional giveaways (bags, stickers, flash drives)</p>
-                </div>
-                <span class="priority-tag medium">Zero-Price Tag</span>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(8,12,20,0.6); padding:0.85rem 1.1rem; border-radius:var(--radius-md); border-left:3px solid var(--accent-amber);">
-                <div>
-                  <h5 style="color:#fff; font-size:0.88rem;">3. Bundled with Laptops</h5>
-                  <p style="font-size:0.76rem; color:var(--text-muted);">Chargers, wired/wireless mouse, laptop sleeves</p>
-                </div>
-                <span class="priority-tag high">Tag to Laptop ID</span>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(8,12,20,0.6); padding:0.85rem 1.1rem; border-radius:var(--radius-md); border-left:3px solid var(--accent-emerald);">
-                <div>
-                  <h5 style="color:#fff; font-size:0.88rem;">4. Balance in Physical Stock</h5>
-                  <p style="font-size:0.76rem; color:var(--text-muted);">Unsold units verified during weekly reconciliation</p>
-                </div>
-                <span class="priority-tag critical">Weekly Audit</span>
-              </div>
+            <div class="chart-box" style="height: 240px;">
+              <canvas id="islamiyyah-repair-chart"></canvas>
             </div>
           </div>
         </div>
 
         <!-- Dynamic Month View Container (Swapped by JS) -->
         <div id="islamiyyah-dynamic-month-content">
-          <!-- Will render September or August on toggle -->
+          <!-- Will render October, September, August or Comparison on toggle -->
         </div>
       </section>
     `;
@@ -373,12 +364,13 @@
           <div class="profile-meta-actions">
             <div class="status-indicator">
               <span class="dot"></span>
-              <span>August & September Cross-Platform Media</span>
+              <span>Tri-Month Cross-Platform Media Tracking</span>
             </div>
             <!-- Month Selector -->
             <div class="month-selector" id="samson-month-selector">
-              <button class="month-tab-btn" data-month="august">August</button>
-              <button class="month-tab-btn active" data-month="september">September</button>
+              <button class="month-tab-btn active" data-month="october">October 2026</button>
+              <button class="month-tab-btn" data-month="september">September 2026</button>
+              <button class="month-tab-btn" data-month="august">August 2026</button>
             </div>
           </div>
         </div>
@@ -387,7 +379,7 @@
         <div class="comparison-hero-card">
           <div class="comparison-header">
             <h3><i data-lucide="sparkles"></i> Content Strategy Breakthrough Highlights</h3>
-            <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--accent-purple);">Organic Social Traction</span>
+            <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--accent-purple);">Multi-Platform Reach</span>
           </div>
           <div class="comp-cards-grid">
             ${p.strategicInsights.map(c => `
@@ -424,9 +416,9 @@
             <div class="content-block">
               <div class="block-title">
                 <i data-lucide="bar-chart-3"></i>
-                <span>Engagement Rate & View Progression</span>
+                <span>Platform Engagement Rate Across Months</span>
               </div>
-              <div class="chart-box">
+              <div class="chart-box" style="height: 300px;">
                 <canvas id="samson-analytics-chart"></canvas>
               </div>
             </div>
@@ -465,11 +457,11 @@
     `;
   }
 
-  // Build Oyinlade Omokanye (CRO) Page
-  function buildOyinladePage() {
-    const p = data.staff.find(s => s.id === 'oyinlade');
+  // Build CRO Page (Damilola Afolabi Rachael with Executive Transition Context)
+  function buildCroPage() {
+    const p = data.staff.find(s => s.id === 'cro');
     return `
-      <section id="view-oyinlade" class="view-section">
+      <section id="view-cro" class="view-section">
         <!-- Profile Banner -->
         <div class="profile-banner">
           <div class="profile-left">
@@ -491,39 +483,109 @@
               <span>Reporting Date: ${p.reportingDate}</span>
             </div>
             <span style="font-size:0.75rem; font-family:var(--font-mono); color:var(--accent-cyan); background:rgba(0,240,255,0.08); padding:0.4rem 0.8rem; border-radius:var(--radius-full); border:1px solid rgba(0,240,255,0.2);">
-              ${p.comparisonNote}
+              <i data-lucide="award" style="width:13px; height:13px; vertical-align:middle; display:inline-block;"></i> New CRO Administration
             </span>
           </div>
         </div>
 
-        <!-- CRO Top KPIs -->
+        <!-- Executive Succession & Transition Banner -->
+        <div style="background: linear-gradient(135deg, rgba(16, 24, 40, 0.95), rgba(30, 27, 75, 0.6)); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1.25rem;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(139, 92, 246, 0.2); color: #c084fc; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <i data-lucide="user-plus" style="width: 24px; height: 24px;"></i>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 0.75rem; font-family: var(--font-mono); color: #c084fc; text-transform: uppercase; letter-spacing: 0.05em;">Leadership Succession Notice</div>
+            <h4 style="font-size: 1rem; font-weight: 700; color: #fff; margin: 0.2rem 0;">Customer Relations Leadership Transition</h4>
+            <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.45;">${p.executiveTransitionNote}</p>
+          </div>
+        </div>
+
+        <!-- CRO Top KPIs (October Under Damilola) -->
         <div class="pulse-grid" style="margin-bottom: 2.5rem;">
           <div class="pulse-stat-card">
             <div class="pulse-icon-box"><i data-lucide="users"></i></div>
             <div class="pulse-label">Total Walk-ins Recorded</div>
             <div class="pulse-value">${p.pipelineSummary.totalWalkIns}</div>
-            <div class="pulse-delta baseline">CRM Ground Baseline</div>
+            <div class="pulse-delta up">+19.4% vs Sep (108 -> 129)</div>
           </div>
 
           <div class="pulse-stat-card">
             <div class="pulse-icon-box" style="color:#10b981; background:rgba(16,185,129,0.1);"><i data-lucide="phone-call"></i></div>
             <div class="pulse-label">Successful Follow-ups</div>
             <div class="pulse-value">${p.pipelineSummary.successfulFollowUps}</div>
-            <div class="pulse-delta up">${p.pipelineSummary.followUpRate} Contact Rate</div>
+            <div class="pulse-delta up">+303% Surge (363 interactions)</div>
           </div>
 
           <div class="pulse-stat-card">
-            <div class="pulse-icon-box" style="color:#f59e0b; background:rgba(245,158,11,0.1);"><i data-lucide="clock"></i></div>
-            <div class="pulse-label">Pending In Pipeline</div>
-            <div class="pulse-value">${p.pipelineSummary.pendingFollowUps}</div>
-            <div class="pulse-delta stable">Active In Re-engagement</div>
+            <div class="pulse-icon-box" style="color:#10b981; background:rgba(16,185,129,0.1);"><i data-lucide="trophy"></i></div>
+            <div class="pulse-label">Won Opportunities</div>
+            <div class="pulse-value" style="color:#34d399;">${p.pipelineSummary.wonOpportunities} Closed</div>
+            <div class="pulse-delta up">Surged from 1 (Sep) to 77 (Oct)</div>
           </div>
 
           <div class="pulse-stat-card">
-            <div class="pulse-icon-box" style="color:#8b5cf6; background:rgba(139,92,246,0.1);"><i data-lucide="check-circle-2"></i></div>
-            <div class="pulse-label">Won Sales & Conversion</div>
-            <div class="pulse-value">${p.pipelineSummary.wonOpportunities} Won</div>
-            <div class="pulse-delta baseline">5 Lost / 15 Unqualified</div>
+            <div class="pulse-icon-box" style="color:#00f0ff; background:rgba(0,240,255,0.1);"><i data-lucide="check-check"></i></div>
+            <div class="pulse-label">Pending Backlog</div>
+            <div class="pulse-value">0 Pending</div>
+            <div class="pulse-delta up">100% Pipeline Resolution</div>
+          </div>
+        </div>
+
+        <!-- Comparative Predecessor vs Current Month Banner -->
+        <div class="comparison-hero-card">
+          <div class="comparison-header">
+            <h3><i data-lucide="git-commit"></i> Monthly Comparison: September (Oyinlade) vs October (Damilola)</h3>
+            <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--accent-cyan);">Succession Performance Audit</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem; margin-top:0.5rem;">
+              <thead>
+                <tr style="border-bottom:1px solid var(--border-subtle); color:var(--text-muted); font-size:0.8rem; text-transform:uppercase;">
+                  <th style="padding:0.9rem;">Metric Dimension</th>
+                  <th style="padding:0.9rem;">September 2026 (Oyinlade)</th>
+                  <th style="padding:0.9rem;">October 2026 (Damilola Afolabi)</th>
+                  <th style="padding:0.9rem;">Performance Delta</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                  <td style="padding:0.9rem; font-weight:700; color:#fff;">Total Walk-Ins Logged</td>
+                  <td style="padding:0.9rem; color:#cbd5e1;">108 Customers</td>
+                  <td style="padding:0.9rem; color:#cbd5e1;">129 Customers</td>
+                  <td style="padding:0.9rem; color:var(--accent-emerald); font-weight:600;">+19.4% Footfall Expansion</td>
+                </tr>
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                  <td style="padding:0.9rem; font-weight:700; color:#fff;">Follow-up Engagement</td>
+                  <td style="padding:0.9rem; color:#cbd5e1;">90 Reached</td>
+                  <td style="padding:0.9rem; color:#cbd5e1;">363 Successful Follow-ups</td>
+                  <td style="padding:0.9rem; color:var(--accent-cyan); font-weight:600;">+303% Multi-Touch Follow-up Depth</td>
+                </tr>
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                  <td style="padding:0.9rem; font-weight:700; color:#fff;">Pending Follow-ups Backlog</td>
+                  <td style="padding:0.9rem; color:#f59e0b;">12 Pending (Unresolved)</td>
+                  <td style="padding:0.9rem; color:var(--accent-emerald);">0 Pending (Clear Queue)</td>
+                  <td style="padding:0.9rem; color:var(--accent-emerald); font-weight:600;">-100% Backlog Cleared</td>
+                </tr>
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                  <td style="padding:0.9rem; font-weight:700; color:#fff;">Closed Won Conversions</td>
+                  <td style="padding:0.9rem; color:#cbd5e1;">1 Sale</td>
+                  <td style="padding:0.9rem; color:#34d399; font-weight:800; font-size:1.05rem;">77 Won Opportunities</td>
+                  <td style="padding:0.9rem; color:var(--accent-emerald); font-weight:700;">+7600% Explosive Revenue Impact</td>
+                </tr>
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                  <td style="padding:0.9rem; font-weight:700; color:#fff;">Lost Opportunities</td>
+                  <td style="padding:0.9rem; color:#cbd5e1;">5 Lost</td>
+                  <td style="padding:0.9rem; color:#cbd5e1;">5 Lost</td>
+                  <td style="padding:0.9rem; color:#60a5fa;">Maintained Low Loss Ceiling</td>
+                </tr>
+                <tr>
+                  <td style="padding:0.9rem; font-weight:700; color:#fff;">Unqualified Inquiries Filtered</td>
+                  <td style="padding:0.9rem; color:#cbd5e1;">15 Leads</td>
+                  <td style="padding:0.9rem; color:#cbd5e1;">22 Leads</td>
+                  <td style="padding:0.9rem; color:#a78bfa;">More Diligent Filtering of Non-Payers</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -532,57 +594,57 @@
           <div class="content-block">
             <div class="block-title">
               <i data-lucide="git-commit"></i>
-              <span>Customer Conversion Pipeline Funnel</span>
+              <span>October Customer Conversion Funnel</span>
             </div>
             <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
-              Full walkthrough of walk-in prospects from front-desk entry to closed outcomes.
+              Breakdown of 129 recorded walk-in prospects yielding 77 closed-won conversions with 0 pending.
             </p>
             <div class="funnel-container">
               <div class="funnel-stage">
                 <div class="funnel-bar-bg" style="width: 100%;"></div>
                 <div class="funnel-stage-content">
                   <div class="funnel-stage-name"><i data-lucide="user-check"></i> Total Walk-Ins Logged</div>
-                  <div class="funnel-stage-val">108 <span class="funnel-stage-pct">(100%)</span></div>
+                  <div class="funnel-stage-val">129 <span class="funnel-stage-pct">(100%)</span></div>
                 </div>
               </div>
 
               <div class="funnel-stage">
-                <div class="funnel-bar-bg" style="width: 83.3%;"></div>
+                <div class="funnel-bar-bg" style="width: 100%; background: linear-gradient(90deg, rgba(0, 240, 255, 0.2), rgba(16, 185, 129, 0.25));"></div>
                 <div class="funnel-stage-content">
-                  <div class="funnel-stage-name"><i data-lucide="phone"></i> Successfully Followed Up</div>
-                  <div class="funnel-stage-val">90 <span class="funnel-stage-pct">(83.3%)</span></div>
-                </div>
-              </div>
-
-              <div class="funnel-stage">
-                <div class="funnel-bar-bg" style="width: 13.9%;"></div>
-                <div class="funnel-stage-content">
-                  <div class="funnel-stage-name"><i data-lucide="filter"></i> Unqualified Leads Filtered</div>
-                  <div class="funnel-stage-val">15 <span class="funnel-stage-pct">(13.9%)</span></div>
-                </div>
-              </div>
-
-              <div class="funnel-stage">
-                <div class="funnel-bar-bg" style="width: 11.1%;"></div>
-                <div class="funnel-stage-content">
-                  <div class="funnel-stage-name"><i data-lucide="clock"></i> Pending Consideration / Review</div>
-                  <div class="funnel-stage-val">12 <span class="funnel-stage-pct">(11.1%)</span></div>
-                </div>
-              </div>
-
-              <div class="funnel-stage">
-                <div class="funnel-bar-bg" style="width: 4.6%;"></div>
-                <div class="funnel-stage-content">
-                  <div class="funnel-stage-name"><i data-lucide="x-circle"></i> Lost Opportunities</div>
-                  <div class="funnel-stage-val">5 <span class="funnel-stage-pct">(4.6%)</span></div>
+                  <div class="funnel-stage-name"><i data-lucide="phone"></i> Successful Follow-ups (Multi-Touch)</div>
+                  <div class="funnel-stage-val">363 <span class="funnel-stage-pct">(2.8x Depth)</span></div>
                 </div>
               </div>
 
               <div class="funnel-stage" style="border-color: rgba(16,185,129,0.5);">
-                <div class="funnel-bar-bg" style="width: 1%; background: rgba(16,185,129,0.3);"></div>
+                <div class="funnel-bar-bg" style="width: 59.7%; background: rgba(16,185,129,0.3);"></div>
                 <div class="funnel-stage-content">
-                  <div class="funnel-stage-name" style="color:#34d399;"><i data-lucide="trophy"></i> Won Converted Sale</div>
-                  <div class="funnel-stage-val" style="color:#34d399;">1 <span class="funnel-stage-pct">(Closed)</span></div>
+                  <div class="funnel-stage-name" style="color:#34d399;"><i data-lucide="trophy"></i> Won Opportunities Converted</div>
+                  <div class="funnel-stage-val" style="color:#34d399;">77 <span class="funnel-stage-pct">(59.7% of Walk-ins)</span></div>
+                </div>
+              </div>
+
+              <div class="funnel-stage">
+                <div class="funnel-bar-bg" style="width: 17.1%;"></div>
+                <div class="funnel-stage-content">
+                  <div class="funnel-stage-name"><i data-lucide="filter"></i> Unqualified Leads Filtered</div>
+                  <div class="funnel-stage-val">22 <span class="funnel-stage-pct">(17.1%)</span></div>
+                </div>
+              </div>
+
+              <div class="funnel-stage">
+                <div class="funnel-bar-bg" style="width: 3.9%;"></div>
+                <div class="funnel-stage-content">
+                  <div class="funnel-stage-name"><i data-lucide="x-circle"></i> Lost Opportunities</div>
+                  <div class="funnel-stage-val">5 <span class="funnel-stage-pct">(3.9%)</span></div>
+                </div>
+              </div>
+
+              <div class="funnel-stage" style="border-color: rgba(0,240,255,0.4);">
+                <div class="funnel-bar-bg" style="width: 0%;"></div>
+                <div class="funnel-stage-content">
+                  <div class="funnel-stage-name" style="color:var(--accent-cyan);"><i data-lucide="check-circle-2"></i> Pending Backlog Remaining</div>
+                  <div class="funnel-stage-val" style="color:var(--accent-cyan);">0 <span class="funnel-stage-pct">(None)</span></div>
                 </div>
               </div>
             </div>
@@ -590,119 +652,84 @@
 
           <div class="content-block">
             <div class="block-title">
-              <i data-lucide="help-circle"></i>
-              <span>Pending Follow-ups Status Breakdown</span>
+              <i data-lucide="alert-octagon"></i>
+              <span>Root Causes for Lost Opportunities (5 Cases)</span>
             </div>
             <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
-              Qualitative reasons identified for the 12 customers currently in pending state:
+              Qualitative reasons identified by Damilola for the 5 lost cases in October:
             </p>
-            <div style="display:flex; flex-direction:column; gap:0.75rem;">
-              ${p.pendingBreakdown.map(item => `
-                <div style="background:rgba(8,12,20,0.6); padding:0.85rem 1rem; border-radius:var(--radius-md); border-left:3px solid var(--accent-amber); display:flex; align-items:center; gap:0.75rem;">
-                  <i data-lucide="hourglass" style="color:var(--accent-amber); width:18px; height:18px; flex-shrink:0;"></i>
-                  <span style="font-size:0.85rem; color:#e2e8f0;">${item}</span>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-
-        <!-- Lost Opportunities & Unqualified Root Causes -->
-        <div class="dept-content-grid">
-          <div class="content-block">
-            <div class="block-title">
-              <i data-lucide="alert-octagon"></i>
-              <span>Why Opportunities Were Lost (5 Cases)</span>
-            </div>
-            <div class="reasons-grid">
+            <div class="reasons-grid" style="grid-template-columns: 1fr;">
               ${p.lostReasons.map(lr => `
                 <div class="reason-card">
                   <div class="reason-icon"><i data-lucide="${lr.icon}"></i></div>
                   <div>
                     <h5>${lr.reason}</h5>
-                    <p>Status: ${lr.count}</p>
+                    <p>${lr.count}</p>
                   </div>
                 </div>
               `).join('')}
             </div>
           </div>
+        </div>
 
+        <!-- Unqualified Leads & Critical Operational Friction -->
+        <div class="dept-content-grid">
           <div class="content-block">
             <div class="block-title">
               <i data-lucide="filter-x"></i>
-              <span>Unqualified Leads Breakdown (15 Leads)</span>
+              <span>October Unqualified Leads Drivers (22 Inquiries)</span>
             </div>
             <div style="display:flex; flex-direction:column; gap:0.6rem;">
               ${p.unqualifiedReasons.map(u => `
-                <div style="font-size:0.85rem; color:#cbd5e1; background:rgba(8,12,20,0.5); padding:0.6rem 0.9rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); display:flex; align-items:center; gap:0.5rem;">
-                  <i data-lucide="check" style="color:var(--accent-purple); width:15px; height:15px; flex-shrink:0;"></i>
+                <div style="font-size:0.85rem; color:#cbd5e1; background:rgba(8,12,20,0.5); padding:0.65rem 0.95rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); display:flex; align-items:center; gap:0.6rem;">
+                  <i data-lucide="check-circle" style="color:var(--accent-purple); width:15px; height:15px; flex-shrink:0;"></i>
                   <span>${u}</span>
                 </div>
               `).join('')}
             </div>
           </div>
+
+          <div class="content-block">
+            <div class="block-title">
+              <i data-lucide="alert-triangle"></i>
+              <span>Field Limitations Encountered (Action Needed)</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:0.75rem;">
+              ${p.issuesAndLimitations.map(issue => `
+                <div style="background:rgba(8,12,20,0.6); padding:0.9rem 1rem; border-radius:var(--radius-md); border-left:3px solid ${issue.severity === 'high' ? 'var(--accent-rose)' : 'var(--accent-amber)'};">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.25rem;">
+                    <h5 style="color:#fff; font-size:0.88rem; font-weight:700;">${issue.title}</h5>
+                    <span class="priority-tag ${issue.severity === 'high' ? 'critical' : 'medium'}">${issue.tag}</span>
+                  </div>
+                  <p style="font-size:0.8rem; color:#cbd5e1; line-height:1.4;">${issue.detail}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
         </div>
 
-        <!-- Technical & Non-Technical Issues and Limitations -->
-        <div class="content-block full-width">
+        <!-- CRO Strategic Recommendations -->
+        <div class="content-block full-width" style="margin-top: 2rem;">
           <div class="block-title">
-            <i data-lucide="alert-triangle"></i>
-            <span>Identified Operational Issues & System Limitations</span>
+            <i data-lucide="check-square"></i>
+            <span>Damilola's Strategic Suggestions & Action Directives</span>
           </div>
-          <div class="split-box-container">
-            <div class="split-box tech">
-              <h4><i data-lucide="cpu"></i> Technical & Infrastructure Limitations</h4>
-              <ul>
-                ${p.issuesAndLimitations.technical.map(t => `<li>${t}</li>`).join('')}
-              </ul>
-            </div>
-            <div class="split-box nontech">
-              <h4><i data-lucide="shield-alert"></i> Non-Technical & Channel Security Risks</h4>
-              <ul>
-                ${p.issuesAndLimitations.nonTechnical.map(nt => `<li>${nt}</li>`).join('')}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- CRO Observations & Recommendations -->
-        <div class="dept-content-grid" style="margin-top: 2rem;">
-          <div class="content-block">
-            <div class="block-title">
-              <i data-lucide="eye"></i>
-              <span>Key Field Observations</span>
-            </div>
-            <div class="obs-list">
-              ${p.observations.map(o => `
-                <div class="obs-card">
-                  <p>${o}</p>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <div class="content-block">
-            <div class="block-title">
-              <i data-lucide="check-square"></i>
-              <span>Strategic Action Recommendations</span>
-            </div>
-            <div class="rec-list">
-              ${p.recommendations.map(r => `
-                <div class="rec-card">
-                  <h4>
-                    <span>${r.title}</span>
-                    <span class="priority-tag ${r.priority.toLowerCase()}">${r.priority}</span>
-                  </h4>
-                  <p>${r.text}</p>
-                </div>
-              `).join('')}
-            </div>
+          <div class="rec-list">
+            ${p.recommendations.map(r => `
+              <div class="rec-card">
+                <h4>
+                  <span>${r.title}</span>
+                  <span class="priority-tag ${r.priority.toLowerCase()}">${r.priority}</span>
+                </h4>
+                <p>${r.text}</p>
+              </div>
+            `).join('')}
           </div>
         </div>
 
         <!-- Executive Summary Note -->
-        <div class="takeaway-item" style="margin-top: 2rem; border-left-color: var(--accent-purple); background: rgba(139, 92, 246, 0.08);">
-          <i data-lucide="file-text" style="color:var(--accent-purple);"></i>
+        <div class="takeaway-item" style="margin-top: 2rem; border-left-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.08);">
+          <i data-lucide="file-text" style="color:var(--accent-cyan);"></i>
           <span><strong>CRO Executive Summary:</strong> ${p.conclusion}</span>
         </div>
       </section>
@@ -715,14 +742,14 @@
     const container = document.getElementById('islamiyyah-dynamic-month-content');
     if (!container) return;
 
-    if (month === 'august') {
-      const rep = p.augustReport;
+    if (month === 'october') {
+      const rep = p.octoberReport;
       container.innerHTML = `
         <div class="dept-content-grid">
           <div class="content-block">
             <div class="block-title">
               <i data-lucide="alert-circle"></i>
-              <span>August Field Observations</span>
+              <span>October Field Observations (Sales & Repairs)</span>
             </div>
             <div class="obs-list">
               ${rep.observations.map(o => `
@@ -737,7 +764,7 @@
           <div class="content-block">
             <div class="block-title">
               <i data-lucide="check-circle"></i>
-              <span>August Recommendations</span>
+              <span>October Operational Recommendations</span>
             </div>
             <div class="rec-list">
               ${rep.recommendations.map(r => `
@@ -751,7 +778,7 @@
         </div>
         <div class="takeaway-item" style="margin-top: 1.5rem;">
           <i data-lucide="file-check"></i>
-          <span><strong>August Conclusion:</strong> ${rep.conclusion}</span>
+          <span><strong>October Conclusion:</strong> ${rep.conclusion}</span>
         </div>
       `;
     } else if (month === 'september') {
@@ -793,47 +820,91 @@
           <span><strong>September Conclusion:</strong> ${rep.conclusion}</span>
         </div>
       `;
+    } else if (month === 'august') {
+      const rep = p.augustReport;
+      container.innerHTML = `
+        <div class="dept-content-grid">
+          <div class="content-block">
+            <div class="block-title">
+              <i data-lucide="alert-circle"></i>
+              <span>August Field Observations</span>
+            </div>
+            <div class="obs-list">
+              ${rep.observations.map(o => `
+                <div class="obs-card">
+                  <h4>${o.title}</h4>
+                  <p>${o.text}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="content-block">
+            <div class="block-title">
+              <i data-lucide="check-circle"></i>
+              <span>August Recommendations</span>
+            </div>
+            <div class="rec-list">
+              ${rep.recommendations.map(r => `
+                <div class="rec-card">
+                  <h4>${r.title}</h4>
+                  <p>${r.text}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="takeaway-item" style="margin-top: 1.5rem;">
+          <i data-lucide="file-check"></i>
+          <span><strong>August Conclusion:</strong> ${rep.conclusion}</span>
+        </div>
+      `;
     } else if (month === 'comparison') {
       container.innerHTML = `
         <div class="content-block full-width">
           <div class="block-title">
             <i data-lucide="git-compare"></i>
-            <span>August vs September Detailed Workflow Evolution</span>
+            <span>August vs September vs October Detailed Operational Evolution</span>
           </div>
           <div style="overflow-x:auto;">
             <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.88rem; margin-top:0.5rem;">
               <thead>
                 <tr style="border-bottom:1px solid var(--border-subtle); color:var(--text-muted); font-size:0.8rem; text-transform:uppercase;">
                   <th style="padding:1rem;">Operational Area</th>
-                  <th style="padding:1rem;">August State</th>
-                  <th style="padding:1rem;">September State</th>
-                  <th style="padding:1rem;">Q4 Action Directive</th>
+                  <th style="padding:1rem;">August 2026</th>
+                  <th style="padding:1rem;">September 2026</th>
+                  <th style="padding:1rem;">October 2026</th>
+                  <th style="padding:1rem;">Strategic Direction</th>
                 </tr>
               </thead>
               <tbody>
                 <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-                  <td style="padding:1rem; font-weight:700; color:#fff;">Laptop Sales Tracking</td>
-                  <td style="padding:1rem; color:#cbd5e1;">28 Laptops Sold (Recorded)</td>
-                  <td style="padding:1rem; color:#cbd5e1;">27 Laptops Sold (Accurate)</td>
-                  <td style="padding:1rem; color:var(--accent-emerald);">Maintain ledger accuracy</td>
+                  <td style="padding:1rem; font-weight:700; color:#fff;">Laptop Sales</td>
+                  <td style="padding:1rem; color:#cbd5e1;">28 Laptops</td>
+                  <td style="padding:1rem; color:#cbd5e1;">27 Laptops</td>
+                  <td style="padding:1rem; color:#34d399; font-weight:700;">45 Laptops (+66.7%)</td>
+                  <td style="padding:1rem; color:var(--accent-emerald);">All-time monthly high</td>
                 </tr>
                 <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-                  <td style="padding:1rem; font-weight:700; color:#fff;">Hardware Repairs</td>
-                  <td style="padding:1rem; color:#cbd5e1;">32 Laptops intake; Missing dates & statuses</td>
-                  <td style="padding:1rem; color:#cbd5e1;">Refocused on sales & accessories</td>
-                  <td style="padding:1rem; color:var(--accent-cyan);">Implement unique job cards with pickup timestamps</td>
+                  <td style="padding:1rem; font-weight:700; color:#fff;">Repair Intake</td>
+                  <td style="padding:1rem; color:#cbd5e1;">32 Laptops</td>
+                  <td style="padding:1rem; color:#cbd5e1;">Unreported / Focused on sales</td>
+                  <td style="padding:1rem; color:#60a5fa; font-weight:700;">81 Laptops (47 Resolved)</td>
+                  <td style="padding:1rem; color:var(--accent-cyan);">Implement repair-to-CRO notification protocol</td>
                 </tr>
                 <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
                   <td style="padding:1rem; font-weight:700; color:#fff;">Accessories Tracking</td>
-                  <td style="padding:1rem; color:#cbd5e1;">29 Units; Mixed with laptop sales</td>
-                  <td style="padding:1rem; color:#cbd5e1;">47 Units; Unclear split (Sold vs Gift vs Bundle)</td>
-                  <td style="padding:1rem; color:var(--accent-amber);">Enforce 4-column daily register</td>
+                  <td style="padding:1rem; color:#cbd5e1;">29 Units; Mixed records</td>
+                  <td style="padding:1rem; color:#cbd5e1;">47 Units; Unclear split</td>
+                  <td style="padding:1rem; color:#f59e0b; font-weight:700;">43 Units (12 Office/Gift, 31 Retail)</td>
+                  <td style="padding:1rem; color:var(--accent-amber);">Enforce separate commercial sales ledger</td>
                 </tr>
                 <tr>
                   <td style="padding:1rem; font-weight:700; color:#fff;">Stock Audits</td>
-                  <td style="padding:1rem; color:#cbd5e1;">End-of-month manual counts</td>
-                  <td style="padding:1rem; color:#cbd5e1;">Daily reconciliation suggested</td>
-                  <td style="padding:1rem; color:var(--accent-purple);">Assign single custody officer with daily sign-off</td>
+                  <td style="padding:1rem; color:#cbd5e1;">End-of-month counts</td>
+                  <td style="padding:1rem; color:#cbd5e1;">Daily sheets proposed</td>
+                  <td style="padding:1rem; color:#c084fc;">Pending tracking protocol</td>
+                  <td style="padding:1rem; color:var(--accent-purple);">Enforce weekly physical vs register sign-off</td>
                 </tr>
               </tbody>
             </table>
@@ -851,7 +922,7 @@
     const platData = p.metricsSummary[month][platform];
     const grid = document.getElementById('samson-plat-stats-grid');
     const list = document.getElementById('samson-top-videos-list');
-    if (!grid || !list) return;
+    if (!grid || !list || !platData) return;
 
     let cardsHtml = '';
     if (platform === 'tiktok') {
@@ -869,12 +940,12 @@
         <div class="pulse-stat-card">
           <div class="pulse-label">Total Views</div>
           <div class="pulse-value">${platData.views}</div>
-          <div class="pulse-delta up">Video Impressions</div>
+          <div class="pulse-delta up">${platData.reach ? platData.reach + ' Reach' : 'Impressions'}</div>
         </div>
         <div class="pulse-stat-card">
           <div class="pulse-label">Engagement Rate</div>
           <div class="pulse-value" style="color:var(--accent-cyan);">${platData.engRate}</div>
-          <div class="pulse-delta up">${platData.reactions} Reactions</div>
+          <div class="pulse-delta up">${platData.reactions} Reactions • ${platData.comments} Comments</div>
         </div>
       `;
     } else if (platform === 'instagram') {
@@ -891,13 +962,13 @@
         </div>
         <div class="pulse-stat-card">
           <div class="pulse-label">Views / Reach</div>
-          <div class="pulse-value">${platData.views} / ${platData.reach}</div>
-          <div class="pulse-delta up">Audience Reach</div>
+          <div class="pulse-value">${platData.views} / ${platData.reach || '—'}</div>
+          <div class="pulse-delta up">${platData.watchTimeMin ? platData.watchTimeMin + ' Min Watch' : 'Audience Reach'}</div>
         </div>
         <div class="pulse-stat-card">
           <div class="pulse-label">Engagement Rate</div>
           <div class="pulse-value">${platData.engRate}</div>
-          <div class="pulse-delta stable">${platData.reactions} Reactions</div>
+          <div class="pulse-delta stable">${platData.reactions} Reactions • ${platData.saves || 0} Saves</div>
         </div>
       `;
     } else if (platform === 'facebook') {
@@ -905,7 +976,7 @@
         <div class="pulse-stat-card">
           <div class="pulse-label">Follower Movement</div>
           <div class="pulse-value">${platData.followers}</div>
-          <div class="pulse-delta down">Follower Net</div>
+          <div class="pulse-delta ${platData.followers.startsWith('+') ? 'up' : 'down'}">Follower Net</div>
         </div>
         <div class="pulse-stat-card">
           <div class="pulse-label">Posts Shared</div>
@@ -915,7 +986,7 @@
         <div class="pulse-stat-card">
           <div class="pulse-label">Impressions</div>
           <div class="pulse-value">${platData.impressions}</div>
-          <div class="pulse-delta up">Organic Reach</div>
+          <div class="pulse-delta up">${platData.shares ? platData.shares + ' Shares' : 'Organic Reach'}</div>
         </div>
         <div class="pulse-stat-card">
           <div class="pulse-label">Engagement Rate</div>
@@ -927,7 +998,7 @@
     grid.innerHTML = cardsHtml;
 
     // Render top 3 videos for selected platform and month
-    const topVideos = p.topVideos[month][platform] || [];
+    const topVideos = (p.topVideos[month] && p.topVideos[month][platform]) || [];
     list.innerHTML = topVideos.map((video, idx) => `
       <div class="top-content-item">
         <div style="display:flex; align-items:center;">
@@ -953,23 +1024,31 @@
     chartInstances['overview1'] = new Chart(ctx1, {
       type: 'bar',
       data: {
-        labels: ['Laptop Sales', 'Accessories Recorded', 'Repair Intake'],
+        labels: ['Laptop Sales', 'Accessories Recorded', 'Repairs Handled'],
         datasets: [
           {
             label: 'August 2026',
             data: [28, 29, 32],
-            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+            backgroundColor: 'rgba(59, 130, 246, 0.65)',
             borderColor: '#3b82f6',
             borderWidth: 1,
-            borderRadius: 6
+            borderRadius: 5
           },
           {
             label: 'September 2026',
             data: [27, 47, 0],
-            backgroundColor: 'rgba(0, 240, 255, 0.8)',
+            backgroundColor: 'rgba(139, 92, 246, 0.7)',
+            borderColor: '#8b5cf6',
+            borderWidth: 1,
+            borderRadius: 5
+          },
+          {
+            label: 'October 2026',
+            data: [45, 43, 81],
+            backgroundColor: 'rgba(0, 240, 255, 0.85)',
             borderColor: '#00f0ff',
             borderWidth: 1,
-            borderRadius: 6
+            borderRadius: 5
           }
         ]
       },
@@ -989,15 +1068,14 @@
     chartInstances['overview2'] = new Chart(ctx2, {
       type: 'doughnut',
       data: {
-        labels: ['Followed Up (90)', 'Unqualified (15)', 'Pending (12)', 'Lost (5)', 'Won Sale (1)'],
+        labels: ['Won Opportunities (77)', 'Unqualified Leads (22)', 'Lost Opportunities (5)', 'Pending (0)'],
         datasets: [{
-          data: [90, 15, 12, 5, 1],
+          data: [77, 22, 5, 0.01],
           backgroundColor: [
-            'rgba(0, 240, 255, 0.8)',
+            'rgba(16, 185, 129, 0.9)',
             'rgba(139, 92, 246, 0.8)',
-            'rgba(245, 158, 11, 0.8)',
             'rgba(244, 63, 94, 0.8)',
-            'rgba(16, 185, 129, 0.9)'
+            'rgba(0, 240, 255, 0.3)'
           ],
           borderColor: '#080c14',
           borderWidth: 3
@@ -1016,27 +1094,37 @@
 
   function initIslamiyyahCharts() {
     const ctx = document.getElementById('islamiyyah-volume-chart');
+    const ctxRepair = document.getElementById('islamiyyah-repair-chart');
     if (!ctx || !window.Chart) return;
     if (chartInstances['islamiyyah']) chartInstances['islamiyyah'].destroy();
+    if (chartInstances['islamiyyahRepair']) chartInstances['islamiyyahRepair'].destroy();
 
     chartInstances['islamiyyah'] = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Laptops Sold', 'Accessories Recorded', 'Repairs (Aug)'],
+        labels: ['August', 'September', 'October'],
         datasets: [
           {
-            label: 'August',
-            data: [28, 29, 32],
-            backgroundColor: 'rgba(59, 130, 246, 0.65)',
-            borderColor: '#3b82f6',
+            label: 'Laptops Sold',
+            data: [28, 27, 45],
+            backgroundColor: 'rgba(0, 240, 255, 0.85)',
+            borderColor: '#00f0ff',
             borderWidth: 1,
             borderRadius: 6
           },
           {
-            label: 'September',
-            data: [27, 47, 0],
-            backgroundColor: 'rgba(0, 240, 255, 0.85)',
-            borderColor: '#00f0ff',
+            label: 'Accessories Logged',
+            data: [29, 47, 43],
+            backgroundColor: 'rgba(139, 92, 246, 0.8)',
+            borderColor: '#8b5cf6',
+            borderWidth: 1,
+            borderRadius: 6
+          },
+          {
+            label: 'Repairs Handled',
+            data: [32, 0, 81],
+            backgroundColor: 'rgba(16, 185, 129, 0.8)',
+            borderColor: '#10b981',
             borderWidth: 1,
             borderRadius: 6
           }
@@ -1054,6 +1142,34 @@
         }
       }
     });
+
+    if (ctxRepair) {
+      chartInstances['islamiyyahRepair'] = new Chart(ctxRepair, {
+        type: 'doughnut',
+        data: {
+          labels: ['Hardware Fixed & Picked (35)', 'Software Fixed & Picked (12)', 'Pending Status (22)', 'Customer Budget/Exit (12)'],
+          datasets: [{
+            data: [35, 12, 22, 12],
+            backgroundColor: [
+              'rgba(16, 185, 129, 0.85)',
+              'rgba(0, 240, 255, 0.85)',
+              'rgba(245, 158, 11, 0.85)',
+              'rgba(244, 63, 94, 0.85)'
+            ],
+            borderColor: '#080c14',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#94a3b8', boxWidth: 10, font: { size: 10 } } }
+          },
+          cutout: '60%'
+        }
+      });
+    }
   }
 
   function initSamsonCharts(month) {
@@ -1062,33 +1178,35 @@
     if (chartInstances['samson']) chartInstances['samson'].destroy();
 
     const p = data.staff.find(s => s.id === 'samson');
-    const aug = p.metricsSummary.august;
-    const sep = p.metricsSummary.september;
 
     chartInstances['samson'] = new Chart(ctx, {
-      type: 'line',
+      type: 'bar',
       data: {
         labels: ['TikTok', 'Instagram', 'Facebook'],
         datasets: [
           {
             label: 'August Engagement %',
             data: [7.44, 1.72, 1.88],
+            backgroundColor: 'rgba(59, 130, 246, 0.6)',
             borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            fill: true,
-            tension: 0.3,
-            pointRadius: 6,
-            pointBackgroundColor: '#3b82f6'
+            borderWidth: 1,
+            borderRadius: 5
           },
           {
             label: 'September Engagement %',
             data: [45.2, 2.22, 1.12],
+            backgroundColor: 'rgba(139, 92, 246, 0.65)',
+            borderColor: '#8b5cf6',
+            borderWidth: 1,
+            borderRadius: 5
+          },
+          {
+            label: 'October Engagement %',
+            data: [4.28, 1.96, 1.76],
+            backgroundColor: 'rgba(0, 240, 255, 0.8)',
             borderColor: '#00f0ff',
-            backgroundColor: 'rgba(0, 240, 255, 0.15)',
-            fill: true,
-            tension: 0.3,
-            pointRadius: 6,
-            pointBackgroundColor: '#00f0ff'
+            borderWidth: 1,
+            borderRadius: 5
           }
         ]
       },
@@ -1112,8 +1230,8 @@
     });
   }
 
-  function initOyinladeCharts() {
-    // Already populated with responsive CSS bar animations and flex containers
+  function initCroCharts() {
+    // Handled with interactive CSS funnel and comparative tables
   }
 
   // Event Listeners for sub-tabs and controls
@@ -1132,7 +1250,7 @@
     }
 
     // Samson month & platform selector
-    let currentSamsonMonth = 'september';
+    let currentSamsonMonth = 'october';
     let currentSamsonPlat = 'tiktok';
 
     const samMonthSelector = document.getElementById('samson-month-selector');
@@ -1176,15 +1294,16 @@
       ${buildOverviewPage()}
       ${buildIslamiyyahPage()}
       ${buildSamsonPage()}
-      ${buildOyinladePage()}
+      ${buildCroPage()}
     `;
 
+    renderStrategicTakeaways();
     renderNavigation();
     renderHeroShortcuts();
 
-    // Initial default renders
-    renderIslamiyyahMonthView('september');
-    renderSamsonPlatformMetrics('tiktok', 'september');
+    // Initial default renders (October as the latest focal month)
+    renderIslamiyyahMonthView('october');
+    renderSamsonPlatformMetrics('tiktok', 'october');
     attachSubEventListeners();
 
     // Initialize initial charts
